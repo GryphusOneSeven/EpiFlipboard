@@ -1,0 +1,29 @@
+# Byte-compiled / artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv
+venv/
+.env
+.env.*
+
+# Packages
+*.egg-info/
+dist/
+build/
+
+# Python tooling
+pip-wheel-metadata/
+.pytest_cache/
+
+# IDE editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Alembic / migrations
+# alembic/versions/*.pyc
