@@ -8,7 +8,6 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profil"),
-        backgroundColor: Colors.grey,
         elevation: 0,
 
         actions: [
@@ -33,8 +32,10 @@ class ProfilePage extends StatelessWidget {
           IconButton(
             tooltip: "Parametres",
             icon: const Icon(Icons.settings),
-            onPressed: () async {
-              print("wsh lequipe");
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Parametres")),
+              );
             },
           ),
         ],
