@@ -84,7 +84,7 @@ def get_user(user_id: int):
 @app.get("/test-db")
 def test_db():
     try:
-        result = supabase.table("User").select("*").limit(1).execute()
+        result = supabase.table("User").select("*").execute()
         return {"status": "ok", "data": result.data}
     except Exception as e:
         return {"status": "error", "message": str(e)}
