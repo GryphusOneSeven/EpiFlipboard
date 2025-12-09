@@ -25,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _continue() {
-    print("Continuing without account");
     Navigator.pop(context);
   }
 
