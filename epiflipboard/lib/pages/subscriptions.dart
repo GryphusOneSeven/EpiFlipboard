@@ -15,17 +15,20 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     {
       "title": "Technologie",
       "description": "Les dernières innovations et tendances tech",
-      "image": "https://picsum.photos/400/600?1"
+      "image": "https://picsum.photos/400/600?1",
+      "theme": "tech"
     },
     {
       "title": "Gaming",
       "description": "Toute l’actualité du jeu vidéo",
-      "image": "https://picsum.photos/400/600?2"
+      "image": "https://picsum.photos/400/600?2",
+      "theme": "gaming"
     },
     {
       "title": "Science",
       "description": "Découvertes et recherches fascinantes",
-      "image": "https://picsum.photos/400/600?3"
+      "image": "https://picsum.photos/400/600?3",
+      "theme": "science"
     },
   ];
 
@@ -46,7 +49,11 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
           itemBuilder: (context, index) {
             final sub = subscriptions[index];
 
-            return ClipRRect(
+            return InkWell(
+              onTap: () {
+                print(sub["theme"]);
+                Navigator.pushNamed(context, '/topic');
+              },
               child: Stack(
                 children: [
                   Positioned.fill(
