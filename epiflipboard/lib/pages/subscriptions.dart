@@ -1,3 +1,4 @@
+import 'package:epiflipboard/pages/topic.dart';
 import 'package:flutter/material.dart';
 
 class SubscriptionsPage extends StatefulWidget {
@@ -51,8 +52,10 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
 
             return InkWell(
               onTap: () {
-                print(sub["theme"]);
-                Navigator.pushNamed(context, '/topic');
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const TopicPage(
+                  title: "topic",
+                  topic: "business",
+                )));
               },
               child: Stack(
                 children: [

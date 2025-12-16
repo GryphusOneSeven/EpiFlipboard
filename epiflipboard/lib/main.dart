@@ -8,7 +8,7 @@ import 'pages/topic.dart';
 
 void main() => runApp(
   DevicePreview(
-    builder: (context) => EpiFlipboardApp(), // Wrap your app
+    builder: (context) => EpiFlipboardApp(),
   ),
 );
 
