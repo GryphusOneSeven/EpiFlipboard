@@ -1,3 +1,4 @@
+import 'package:epiflipboard/pages/topic.dart';
 import 'package:flutter/material.dart';
 
 class SubscriptionsPage extends StatefulWidget {
@@ -15,17 +16,20 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     {
       "title": "Technologie",
       "description": "Les dernières innovations et tendances tech",
-      "image": "https://picsum.photos/400/600?1"
+      "image": "https://picsum.photos/400/600?1",
+      "theme": "tech"
     },
     {
       "title": "Gaming",
       "description": "Toute l’actualité du jeu vidéo",
-      "image": "https://picsum.photos/400/600?2"
+      "image": "https://picsum.photos/400/600?2",
+      "theme": "gaming"
     },
     {
       "title": "Science",
       "description": "Découvertes et recherches fascinantes",
-      "image": "https://picsum.photos/400/600?3"
+      "image": "https://picsum.photos/400/600?3",
+      "theme": "science"
     },
   ];
 
@@ -46,7 +50,13 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
           itemBuilder: (context, index) {
             final sub = subscriptions[index];
 
-            return ClipRRect(
+            return InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const TopicPage(
+                  title: "topic",
+                  topic: "business",
+                )));
+              },
               child: Stack(
                 children: [
                   Positioned.fill(
