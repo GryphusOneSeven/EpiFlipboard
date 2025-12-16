@@ -40,10 +40,20 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
+/android/.gradle/
+/android/app/build/
 /android/app/debug
 /android/app/profile
 /android/app/release
 
+/venv
+__pycache__/
+.venv
+memo.txt
+
+node_modules/
+
 linux/
 macos/
 windows/
+
