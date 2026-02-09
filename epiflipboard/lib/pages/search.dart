@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 // import '../services/newsAPI.dart';
+import './results.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -73,21 +74,32 @@ final List<Map<String, dynamic>> themes = [
 
   String selectedTheme = "Économie";
 
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: "Rechercher sur epiFlipboard",
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
+Widget _buildSearchBar(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.all(16),
+    child: TextField(
+      controller: _searchController,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (query) {
+        if (query.trim().isEmpty) return;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SearchResultsPage(query: query),
           ),
+        );
+      },
+      decoration: InputDecoration(
+        hintText: "Rechercher sur epiFlipboard",
+        prefixIcon: const Icon(Icons.search),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
 Widget _buildThemeCarousel() {
   return SizedBox(
@@ -195,7 +207,7 @@ Widget _buildThemeItems() {
         ),
         body: ListView(
           children: [
-            _buildSearchBar(),
+            _buildSearchBar(context),
             _buildThemeCarousel(), 
             _buildThemeItems()]));
   }
