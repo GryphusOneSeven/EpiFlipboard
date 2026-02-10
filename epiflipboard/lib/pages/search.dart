@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/newsAPI.dart';
-import 'dart:async';
+// import '../services/newsAPI.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -10,146 +9,194 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final NewsApiService _newsService = NewsApiService();
-  final TextEditingController _controller = TextEditingController();
+  // final NewsApiService _newsService = NewsApiService();
+  final TextEditingController _searchController = TextEditingController();
 
-  List<dynamic> _results = [];
-  bool _isLoading = false;
-  String _lastQuery = "";
+final List<Map<String, dynamic>> themes = [
+  {
+    "name": "Actualités",
+    "items": [
+      {"title": "À la une", "image": "https://picsum.photos/400/600?1"},
+      {"title": "International", "image": "https://picsum.photos/400/600?2"},
+    ],
+  },
+  {
+    "name": "Économie",
+    "items": [
+      {"title": "Marchés", "image": "https://picsum.photos/400/600?3"},
+      {"title": "Startups", "image": "https://picsum.photos/400/600?4"},
+    ],
+  },
+  {
+    "name": "Tech",
+    "items": [
+      {"title": "IA", "image": "https://picsum.photos/400/600?5"},
+      {"title": "Gadgets", "image": "https://picsum.photos/400/600?6"},
+    ],
+  },
+  {
+    "name": "Science",
+    "items": [
+      {"title": "Espace", "image": "https://picsum.photos/400/600?7"},
+      {"title": "Santé", "image": "https://picsum.photos/400/600?8"},
+    ],
+  },
+  {
+    "name": "Sport",
+    "items": [
+      {"title": "Football", "image": "https://picsum.photos/400/600?9"},
+      {"title": "NBA", "image": "https://picsum.photos/400/600?10"},
+    ],
+  },
+  {
+    "name": "Voyage",
+    "items": [
+      {"title": "Destinations", "image": "https://picsum.photos/400/600?11"},
+      {"title": "Conseils", "image": "https://picsum.photos/400/600?12"},
+    ],
+  },
+  {
+    "name": "Art",
+    "items": [
+      {"title": "Peinture", "image": "https://picsum.photos/400/600?13"},
+      {"title": "Photographie", "image": "https://picsum.photos/400/600?14"},
+    ],
+  },
+  {
+    "name": "Musique",
+    "items": [
+      {"title": "Rap", "image": "https://picsum.photos/400/600?15"},
+      {"title": "Électro", "image": "https://picsum.photos/400/600?16"},
+    ],
+  },
+];
 
-  Future<void> _search(String query) async {
-    if (query.isEmpty) return;
+  String selectedTheme = "Économie";
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final articles = await _newsService.searchKeyword(query);
-
-      setState(() {
-        _results = articles;
-        _lastQuery = query;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur : $e")),
-      );
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: "Rechercher sur epiFlipboard",
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+    );
   }
+
+Widget _buildThemeCarousel() {
+  return SizedBox(
+    height: 60,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: themes.length,
+      itemBuilder: (context, index) {
+        final theme = themes[index];
+        final bool isSelected = theme["name"] == selectedTheme;
+
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedTheme = theme["name"];
+            });
+          },
+          child: Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.grey.shade200,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              theme["name"],
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
+Widget _buildThemeItems() {
+  final theme = themes.firstWhere(
+    (t) => t["name"] == selectedTheme,
+  );
+
+  final List items = theme["items"];
+
+  return Padding(
+    padding: const EdgeInsets.all(16),
+    child: GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1,
+      ),
+      itemBuilder: (context, index) {
+        final item = items[index];
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.network(
+                  item["image"],
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.4),
+                ),
+              ),
+
+              Center(
+                child: Text(
+                  item["title"],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Recherche"),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              controller: _controller,
-              onSubmitted: _search,
-              decoration: InputDecoration(
-                hintText: "Rechercher des articles...",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _controller.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() {
-                            _results = [];
-                          });
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
-
-          if (_isLoading)
-            const LinearProgressIndicator(),
-
-          Expanded(
-            child: _results.isEmpty
-                ? Center(
-                    child: Text(
-                      _lastQuery.isEmpty
-                          ? "Rechercher des articles 🔍"
-                          : "Aucun résultat pour \"$_lastQuery\"",
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _results.length,
-                    itemBuilder: (context, index) {
-                      final article = _results[index];
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            // ouvrir détail de l'article
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (article["urlToImage"] != null)
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(16)),
-                                  child: Image.network(
-                                    article["urlToImage"],
-                                    height: 180,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      article["title"] ?? "Sans titre",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      article["source"]?["name"] ?? "",
-                                      style: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
+        title: const Text("Explorer")
+        ),
+        body: ListView(
+          children: [
+            _buildSearchBar(),
+            _buildThemeCarousel(), 
+            _buildThemeItems()]));
   }
 }
