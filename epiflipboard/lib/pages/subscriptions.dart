@@ -12,6 +12,15 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
   @override
   Widget build(BuildContext context) {
 
+  String getTheme(String? str) {
+    if (str != null) {
+      return str;
+    }
+    else {
+      return "general";
+    }
+  }
+
   final List<Map<String, String>> subscriptions = [
     {
       "title": "Technologie",
@@ -52,9 +61,8 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
 
             return InkWell(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const TopicPage(
-                  title: "topic",
-                  topic: "business",
+                Navigator.push(context, MaterialPageRoute(builder: (_) => TopicPage(
+                  topic: getTheme(sub["theme"]),
                 )));
               },
               child: Stack(
