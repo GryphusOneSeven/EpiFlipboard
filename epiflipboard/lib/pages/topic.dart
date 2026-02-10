@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/newsAPI.dart';
 import '../models/articleResult.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter/foundation.dart';
 
 class _ArticleCard extends StatelessWidget {
   final Article article;
@@ -19,10 +19,10 @@ class _ArticleCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _actionItem(Icons.favorite_border, "Like", () {print("like");}),
-        _actionItem(Icons.chat_bubble_outline, "Commenter", () {print("comment");}),
-        _actionItem(Icons.add, "Ajouter", () {print("add");}),
-        _actionItem(Icons.share_outlined, "Partager", () {print("share");}),
+        _actionItem(Icons.favorite_border, "Like", () {debugPrintSynchronously("like");}),
+        _actionItem(Icons.chat_bubble_outline, "Commenter", () {debugPrintSynchronously("comment");}),
+        _actionItem(Icons.add, "Ajouter", () {debugPrintSynchronously("add");}),
+        _actionItem(Icons.share_outlined, "Partager", () {debugPrintSynchronously("share");}),
       ],
     );
   }
