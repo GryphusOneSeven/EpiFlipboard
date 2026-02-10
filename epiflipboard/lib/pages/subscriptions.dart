@@ -25,20 +25,32 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     {
       "title": "Technologie",
       "description": "Les dernières innovations et tendances tech",
-      "image": "https://picsum.photos/400/600?1",
-      "theme": "tech"
+      "image": "https://picsum.photos/id/3/367/267",
+      "theme": "technology"
     },
     {
-      "title": "Gaming",
-      "description": "Toute l’actualité du jeu vidéo",
-      "image": "https://picsum.photos/400/600?2",
-      "theme": "gaming"
+      "title": "Divertissement",
+      "description": "Actualités du divertissement",
+      "image": "https://picsum.photos/id/96/367/267",
+      "theme": "entertainment"
     },
     {
       "title": "Science",
       "description": "Découvertes et recherches fascinantes",
-      "image": "https://picsum.photos/400/600?3",
+      "image": "https://picsum.photos/id/407/367/267",
       "theme": "science"
+    },
+    {
+      "title": "Sports",
+      "description": "Actualités du sport",
+      "image": "https://picsum.photos/id/328/367/267",
+      "theme": "sports"
+    },
+    {
+      "title": "Santé",
+      "description": "Santé et bien-être",
+      "image": "https://picsum.photos/id/18/367/267",
+      "theme": "health"
     },
   ];
 
