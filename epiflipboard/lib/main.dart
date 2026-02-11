@@ -12,6 +12,47 @@ void main() => runApp(
   ),
 );
 
+ThemeData _buildDarkTheme() {
+  const red = Color(0xFFE50914);
+
+  return ThemeData(
+    brightness: Brightness.dark,
+
+    scaffoldBackgroundColor: Color.fromARGB(255, 37, 37, 37),
+
+    colorScheme: const ColorScheme.dark(
+      primary: red,
+      secondary: red,
+      surface: Color.fromARGB(255, 37, 37, 37),
+    ),
+
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color.fromARGB(255, 37, 37, 37),
+      elevation: 0,
+      centerTitle: false,
+    ),
+
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Colors.white),
+      titleLarge: TextStyle(color: Colors.white),
+    ),
+
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: red,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    ),
+
+    focusColor: red,
+    highlightColor: red.withAlpha(1),
+    splashColor: red.withAlpha(12),
+  );
+}
+
 
 class EpiFlipboardApp extends StatelessWidget {
   const EpiFlipboardApp({super.key});
@@ -20,9 +61,7 @@ class EpiFlipboardApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: _buildDarkTheme(),
 
       routes: {
         '/': (context) => const HomePage(),
