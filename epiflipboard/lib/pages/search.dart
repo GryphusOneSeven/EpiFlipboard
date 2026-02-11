@@ -19,34 +19,38 @@ final List<Map<String, dynamic>> themes = [
     "items": [
       {"title": "À la une", "image": "https://picsum.photos/400/600?1"},
       {"title": "International", "image": "https://picsum.photos/400/600?2"},
+      {"title": "France", "image": "https://picsum.photos/400/600?3"},
     ],
   },
   {
     "name": "Économie",
     "items": [
-      {"title": "Marchés", "image": "https://picsum.photos/400/600?3"},
-      {"title": "Startups", "image": "https://picsum.photos/400/600?4"},
+      {"title": "Marchés", "image": "https://picsum.photos/400/600?4"},
+      {"title": "Startups", "image": "https://picsum.photos/400/600?5"},
+      {"title": "Bourse", "image": "https://picsum.photos/400/600?6"},
     ],
   },
   {
     "name": "Tech",
     "items": [
-      {"title": "IA", "image": "https://picsum.photos/400/600?5"},
-      {"title": "Gadgets", "image": "https://picsum.photos/400/600?6"},
+      {"title": "IA", "image": "https://picsum.photos/400/600?7"},
+      {"title": "Gadgets", "image": "https://picsum.photos/400/600?8"},
+      {"title": "Tech for good", "image": "https://picsum.photos/400/600?9"},
     ],
   },
   {
     "name": "Science",
     "items": [
-      {"title": "Espace", "image": "https://picsum.photos/400/600?7"},
-      {"title": "Santé", "image": "https://picsum.photos/400/600?8"},
+      {"title": "Espace", "image": "https://picsum.photos/400/600?10"},
+      {"title": "Santé", "image": "https://picsum.photos/400/600?11"},
     ],
   },
   {
     "name": "Sport",
     "items": [
-      {"title": "Football", "image": "https://picsum.photos/400/600?9"},
-      {"title": "NBA", "image": "https://picsum.photos/400/600?10"},
+      {"title": "Football", "image": "https://picsum.photos/400/600?12"},
+      {"title": "NBA", "image": "https://picsum.photos/400/600?13"},
+      {"title": "Automobile", "image": "https://picsum.photos/400/600?14"},
     ],
   },
   {
@@ -54,6 +58,7 @@ final List<Map<String, dynamic>> themes = [
     "items": [
       {"title": "Destinations", "image": "https://picsum.photos/400/600?11"},
       {"title": "Conseils", "image": "https://picsum.photos/400/600?12"},
+      {"title": "Hotels", "image": "https://picsum.photos/400/600?12"},
     ],
   },
   {
@@ -68,11 +73,12 @@ final List<Map<String, dynamic>> themes = [
     "items": [
       {"title": "Rap", "image": "https://picsum.photos/400/600?15"},
       {"title": "Électro", "image": "https://picsum.photos/400/600?16"},
+      {"title": "Rock", "image": "https://picsum.photos/400/600?16"},
     ],
   },
 ];
 
-  String selectedTheme = "Économie";
+  String selectedTheme = "Actualités";
 
 Widget _buildSearchBar(BuildContext context) {
   return Padding(
