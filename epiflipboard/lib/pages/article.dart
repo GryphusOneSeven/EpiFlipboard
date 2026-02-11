@@ -17,7 +17,7 @@ class _ArticlePageState extends State<ArticlePage> {
   @override
   void initState() {
     super.initState();
-    articles = newsService.searchKeyword("gundam");
+    // articles = newsService.searchKeyword("gundam");
   }
 
  @override

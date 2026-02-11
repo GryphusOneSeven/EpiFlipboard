@@ -53,13 +53,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock_outline, size: 80, color: Colors.blue),
+              const Icon(Icons.lock_outline, size: 80, color: Colors.white),
               const SizedBox(height: 30),
               const Text(
                 'Connexion',
@@ -94,6 +93,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: const Text('Se connecter'),
               ),
+
+              const SizedBox(height: 30),
 
               ElevatedButton(
                 onPressed: _continue,
