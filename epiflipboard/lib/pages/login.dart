@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,6 +11,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  bool _loading = false;
 
   void _login() {
     String email = _emailController.text.trim();
@@ -20,6 +24,24 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Identifiants incorrects')),
+      );
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    setState(() => _loading = true);
+
+    final success = await _authService.signInWithGoogle();
+
+    if (!mounted) return; // 🔥 REQUIRED
+
+    setState(() => _loading = false);
+
+    if (success) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Connexion Google échouée')),
       );
     }
   }
@@ -81,6 +103,16 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: const Text('Continuer sans compte'),
               ),
+
+              const SizedBox(height: 10),
+
+              _loading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton.icon(
+                      icon: const Icon(Icons.login),
+                      label: const Text('Se connecter avec Google'),
+                      onPressed: _loginWithGoogle,
+                    ),
 
             ],
           ),
