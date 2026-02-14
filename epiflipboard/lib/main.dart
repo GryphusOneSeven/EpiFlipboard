@@ -1,5 +1,5 @@
 import 'package:epiflipboard/pages/article.dart';
-import 'package:device_preview/device_preview.dart';
+// import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
 import 'pages/home.dart';
@@ -10,10 +10,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // final loggedIn = await AuthStorage.isLoggedIn();
 
+  // runApp(
+  //   DevicePreview(
+  //     builder: (context) => EpiFlipboardApp(),
+  //   ),
+  // );
   runApp(
-    DevicePreview(
-      builder: (context) => EpiFlipboardApp(),
-    ),
+    const EpiFlipboardApp(),
   );
 }
 
