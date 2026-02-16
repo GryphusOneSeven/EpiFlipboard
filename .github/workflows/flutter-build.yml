@@ -22,7 +22,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
+          flutter-version: 'latest'
           channel: 'stable'
 
       - name: Install dependencies
@@ -30,6 +30,7 @@ jobs:
         working-directory: epiflipboard
 
       - name: Generate config files
+        working-directory: epiflipboard
         run: |
           mkdir -p lib/config
           # Créer newsApi.dart
@@ -50,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: epiflipboard/build/app/outputs/flutter-apk/app-release.apk
