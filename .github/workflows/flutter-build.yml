@@ -27,6 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: epiflipboard
 
       - name: Generate config files
         run: |
@@ -43,6 +44,7 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --release -t lib/main.dart
+        working-directory: epiflipboard
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
