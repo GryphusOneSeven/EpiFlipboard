@@ -1,0 +1,51 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate config files
+        run: |
+          mkdir -p lib/config
+          # Créer newsApi.dart
+          cat <<EOL > lib/config/newsApi.dart
+          const String newsApiKey = "${{ secrets.NEWS_API_KEY }}";
+          EOL
+          # Créer secrets.dart
+          cat <<EOL > lib/config/secrets.dart
+          const String googleClientId = "${{ secrets.GOOGLE_CLIENT_ID }}";
+          const String googleServerClientId = "${{ secrets.GOOGLE_SERVER_CLIENT_ID }}";
+          EOL
+
+      - name: Build APK
+        run: flutter build apk --release -t lib/main.dart
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
