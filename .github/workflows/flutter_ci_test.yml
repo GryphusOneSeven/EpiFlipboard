@@ -15,4 +15,4 @@ jobs:
         with:
           channel: 'stable'
       - run: cd epiflipboard && flutter pub get
-      - run: cd epiflipboard && flutter test --no-sound-null-safety
+      - run: cd epiflipboard && flutter test
