@@ -30,9 +30,17 @@ jobs:
 
       - name: Recreate release keystore
         run: |
+          mkdir -p epiflipboard/android/app
           echo "$KEYSTORE_BASE64" | base64 --decode > epiflipboard/android/app/release-key.jks
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Test keystore
+        run: keytool -list -v -keystore epiflipboard/android/app/release-key.jks -alias $KEY_ALIAS -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Generate config files
         working-directory: epiflipboard
@@ -52,7 +60,7 @@ jobs:
         working-directory: epiflipboard
         run: flutter build apk --release -t lib/main.dart
         env:
-          KEYSTORE_PATH: "android/app/release-key.jks"
+          KEYSTORE_PATH: "release-key.jks"
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
