@@ -14,6 +14,5 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-        working-directory: epiflipboard
-      - run: flutter pub get
-      - run: flutter test --no-sound-null-safety
+      - run: cd epiflipboard && flutter pub get
+      - run: cd epiflipboard && flutter test --no-sound-null-safety
