@@ -2,8 +2,9 @@ name: Build Flutter APK
 
 on:
   push:
-    branches:
-      - SetupServer
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-apk:
