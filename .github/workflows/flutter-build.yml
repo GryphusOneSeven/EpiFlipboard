@@ -1,0 +1,72 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches:
+      - SetupServer
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: epiflipboard
+
+      - name: Recreate release keystore
+        run: |
+          mkdir -p epiflipboard/android/app
+          echo "$KEYSTORE_BASE64" | base64 --decode > epiflipboard/android/app/release-key.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Test keystore
+        run: keytool -list -v -keystore epiflipboard/android/app/release-key.jks -alias $KEY_ALIAS -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Generate config files
+        working-directory: epiflipboard
+        run: |
+          mkdir -p lib/config
+          # newsApi.dart
+          cat <<EOL > lib/config/newsApi.dart
+          const String newsApiKey = "${{ secrets.NEWS_API_KEY }}";
+          EOL
+          # secrets.dart
+          cat <<EOL > lib/config/secrets.dart
+          const String googleClientId = "${{ secrets.GOOGLE_CLIENT_ID }}";
+          const String googleServerClientId = "${{ secrets.GOOGLE_SERVER_CLIENT_ID }}";
+          EOL
+
+      - name: Build APK release
+        working-directory: epiflipboard
+        run: flutter build apk --release -t lib/main.dart
+        env:
+          KEYSTORE_PATH: "release-key.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: epiflipboard/build/app/outputs/flutter-apk/app-release.apk

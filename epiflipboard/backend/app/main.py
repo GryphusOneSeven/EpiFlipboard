@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from .supabase_client import supabase
 from . import crud, models
@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from app.auth.jwt import create_access_token
+from app.auth.jwt import verify_access_token
 
 app = FastAPI()
 
@@ -21,15 +22,6 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"status": "ok"}
-
-
-# Endpoint pour récupérer tous les utilisateurs
-# @app.get("/users")
-# def get_users():
-#     response = supabase.table("users").select("*").execute()
-#     if response.error:
-#         raise HTTPException(status_code=500, detail=str(response.error))
-#    return response.data
 
 # Endpoint pour ajouter un utilisateur
 @app.post("/users")
@@ -48,8 +40,6 @@ def get_user(user_id: int):
     if not response.data:
         raise HTTPException(status_code=404, detail="User not found")
     return response.data[0]
-
-
 
 
 
@@ -111,7 +101,6 @@ async def login_google(data: TokenSchema):
         # Informations récupérées
         email = idinfo['email']
         name = idinfo.get('name', '')
-        # last_name = idinfo.get('family_name', '')
         picture = idinfo.get('picture', '')
 
         # 2. Insérer ou mettre à jour l'utilisateur dans Supabase (Table 'users')
@@ -148,3 +137,29 @@ async def login_google(data: TokenSchema):
     except Exception as e:
         print(f"Erreur: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+
+def get_current_user(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    try:
+        token = authorization.split(" ")[1] # remove "Bearer "
+        payload = verify_access_token(token)
+
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        response = supabase.table("User").select("*").eq("id", user_id).execute()
+
+        if not response.data:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return response.data[0]
+
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.get("/profile")
+def get_profile(current_user: dict = Depends(get_current_user)):
+    return current_user
