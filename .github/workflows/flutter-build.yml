@@ -28,23 +28,34 @@ jobs:
         run: flutter pub get
         working-directory: epiflipboard
 
+      - name: Recreate release keystore
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > epiflipboard/android/app/release-key.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
       - name: Generate config files
         working-directory: epiflipboard
         run: |
           mkdir -p lib/config
-          # Créer newsApi.dart
+          # newsApi.dart
           cat <<EOL > lib/config/newsApi.dart
           const String newsApiKey = "${{ secrets.NEWS_API_KEY }}";
           EOL
-          # Créer secrets.dart
+          # secrets.dart
           cat <<EOL > lib/config/secrets.dart
           const String googleClientId = "${{ secrets.GOOGLE_CLIENT_ID }}";
           const String googleServerClientId = "${{ secrets.GOOGLE_SERVER_CLIENT_ID }}";
           EOL
 
-      - name: Build APK
-        run: flutter build apk --release -t lib/main.dart
+      - name: Build APK release
         working-directory: epiflipboard
+        run: flutter build apk --release -t lib/main.dart
+        env:
+          KEYSTORE_PATH: "android/app/release-key.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
