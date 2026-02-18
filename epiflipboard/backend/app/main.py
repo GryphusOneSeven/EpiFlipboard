@@ -187,3 +187,10 @@ def get_magazine():
     )
 
     return response.data
+
+@app.post("/magazine")
+def create_magazine(mag: dict):
+    response = supabase.table("magazine").insert(mag).execute()
+    if response.error:
+        raise HTTPException(status_code=500, detail=str(response.error))
+    return response.data
