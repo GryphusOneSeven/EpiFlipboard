@@ -28,7 +28,7 @@ jobs:
         run: cd epiflipboard && flutter pub get
 
       - name: Run tests with coverage
-        run: cd epiflipboard && flutter test --coverage
+        run: flutter test --coverage -t epiflipboard/test
 
       - name: Install lcov
         run: sudo apt-get install lcov
