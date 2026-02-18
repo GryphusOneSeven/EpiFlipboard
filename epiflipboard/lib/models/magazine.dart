@@ -13,7 +13,7 @@ class Magazine {
     return Magazine(
       name: json["name"] ?? "",
       description: json["description"] ?? "",
-      private: json["private"] ?? false,
+      private: json["private"] ?? "false",
     );
   }
 
