@@ -1,33 +1,50 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:epiflipboard/services/auth_service.dart';
 import 'package:epiflipboard/services/google_sign_in_wrapper.dart';
-import 'package:epiflipboard/api/backend_url.dart';
 
-// --- MOCKS ---
+// ---------------- MOCKS ----------------
+
 class MockGoogleSignIn extends Mock implements IGoogleSignIn {}
-class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
-class MockGoogleSignInAuthentication extends Mock implements GoogleSignInAuthentication {}
+
+class MockGoogleSignInAccount extends Mock
+    implements GoogleSignInAccount {}
+
+class MockGoogleSignInAuthentication extends Mock
+    implements GoogleSignInAuthentication {}
+
+class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
   late AuthService authService;
   late MockGoogleSignIn mockGoogleSignIn;
+  late MockHttpClient mockClient;
 
   setUp(() {
     mockGoogleSignIn = MockGoogleSignIn();
-    authService = AuthService(googleSignIn: mockGoogleSignIn);
+    mockClient = MockHttpClient();
+
+    authService = AuthService(
+      googleSignIn: mockGoogleSignIn,
+      client: mockClient,
+    );
   });
 
   group('AuthService.signInWithGoogle', () {
     test('retourne false si l\'utilisateur annule la connexion', () async {
-      when(() => mockGoogleSignIn.signOut()).thenAnswer((_) async => null);
-      when(() => mockGoogleSignIn.signIn()).thenAnswer((_) async => null);
+      when(() => mockGoogleSignIn.signOut())
+          .thenAnswer((_) => Future.value());
+
+      when(() => mockGoogleSignIn.signIn())
+          .thenAnswer((_) async => null);
 
       final result = await authService.signInWithGoogle();
+
       expect(result, false);
     });
 
@@ -35,20 +52,31 @@ void main() {
       final mockAccount = MockGoogleSignInAccount();
       final mockAuth = MockGoogleSignInAuthentication();
 
-      when(() => mockGoogleSignIn.signOut()).thenAnswer((_) async => null);
-      when(() => mockGoogleSignIn.signIn()).thenAnswer((_) async => mockAccount);
-      when(() => mockAccount.authentication).thenAnswer((_) async => mockAuth);
-      when(() => mockAuth.idToken).thenReturn('fake_id_token');
+      when(() => mockGoogleSignIn.signOut())
+          .thenAnswer((_) => Future.value());
 
-      // Mock du post HTTP
-      final fakeResponse = http.Response(jsonEncode({'token': 'jwt_token'}), 200);
-      when(() => http.post(
-        Uri.parse('$backendBaseUrl/auth/google/mobile'),
-        headers: any(named: 'headers'),
-        body: any(named: 'body'),
-      )).thenAnswer((_) async => fakeResponse);
+      when(() => mockGoogleSignIn.signIn())
+          .thenAnswer((_) async => mockAccount);
+
+      when(() => mockAccount.authentication)
+          .thenAnswer((_) async => mockAuth);
+
+      when(() => mockAuth.idToken)
+          .thenReturn('fake_id_token');
+
+      when(() => mockClient.post(
+            any(),
+            headers: any(named: 'headers'),
+            body: any(named: 'body'),
+          )).thenAnswer(
+        (_) async => http.Response(
+          jsonEncode({'token': 'jwt_token'}),
+          200,
+        ),
+      );
 
       final result = await authService.signInWithGoogle();
+
       expect(result, true);
     });
 
@@ -56,26 +84,36 @@ void main() {
       final mockAccount = MockGoogleSignInAccount();
       final mockAuth = MockGoogleSignInAuthentication();
 
-      when(() => mockGoogleSignIn.signOut()).thenAnswer((_) async => null);
-      when(() => mockGoogleSignIn.signIn()).thenAnswer((_) async => mockAccount);
-      when(() => mockAccount.authentication).thenAnswer((_) async => mockAuth);
-      when(() => mockAuth.idToken).thenReturn('fake_id_token');
+      when(() => mockGoogleSignIn.signOut())
+          .thenAnswer((_) => Future.value());
 
-      final fakeResponse = http.Response('Erreur', 500);
-      when(() => http.post(
-        Uri.parse('$backendBaseUrl/auth/google/mobile'),
-        headers: any(named: 'headers'),
-        body: any(named: 'body'),
-      )).thenAnswer((_) async => fakeResponse);
+      when(() => mockGoogleSignIn.signIn())
+          .thenAnswer((_) async => mockAccount);
+
+      when(() => mockAccount.authentication)
+          .thenAnswer((_) async => mockAuth);
+
+      when(() => mockAuth.idToken)
+          .thenReturn('fake_id_token');
+
+      when(() => mockClient.post(
+            any(),
+            headers: any(named: 'headers'),
+            body: any(named: 'body'),
+          )).thenAnswer(
+        (_) async => http.Response('Erreur', 500),
+      );
 
       final result = await authService.signInWithGoogle();
+
       expect(result, false);
     });
   });
 
   group('AuthService.signOut', () {
     test('appelle disconnect', () async {
-      when(() => mockGoogleSignIn.disconnect()).thenAnswer((_) async => null);
+      when(() => mockGoogleSignIn.disconnect())
+          .thenAnswer((_) => Future.value());
 
       await authService.signOut();
 

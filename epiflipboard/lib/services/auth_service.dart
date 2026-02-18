@@ -1,24 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'google_sign_in_wrapper.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'google_sign_in_wrapper.dart';
 import 'auth_storage.dart';
 import '../config/secrets.dart';
 import '../api/backend_url.dart';
 
 class AuthService {
-  late final IGoogleSignIn _googleSignIn;
+  final IGoogleSignIn _googleSignIn;
+  final http.Client _client;
 
-  AuthService({IGoogleSignIn? googleSignIn}) {
-    _googleSignIn = googleSignIn ??
-        GoogleSignInWrapper(
-          googleSignIn: GoogleSignIn(
-            clientId: googleClientId,
-            serverClientId: googleServerClientId,
-            scopes: ['email', 'profile'],
-          ),
-        );
-  }
+  AuthService({
+    IGoogleSignIn? googleSignIn,
+    http.Client? client,
+  })  : _googleSignIn = googleSignIn ??
+            GoogleSignInWrapper(
+              googleSignIn: GoogleSignIn(
+                clientId: googleClientId,
+                serverClientId: googleServerClientId,
+                scopes: ['email', 'profile'],
+              ),
+            ),
+        _client = client ?? http.Client();
 
   Future<bool> signInWithGoogle() async {
     try {
@@ -29,9 +33,10 @@ class AuthService {
 
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
+
       if (idToken == null) return false;
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('$backendBaseUrl/auth/google/mobile'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'token': idToken}),
@@ -42,9 +47,9 @@ class AuthService {
         await AuthStorage.saveToken(data['token']);
         return true;
       }
+
       return false;
-    } catch (error) {
-      print("Erreur lors de la connexion Google: $error");
+    } catch (e) {
       return false;
     }
   }
