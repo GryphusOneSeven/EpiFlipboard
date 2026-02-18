@@ -1,4 +1,5 @@
 import 'package:epiflipboard/models/magazine.dart';
+import 'package:epiflipboard/pages/createMagazine.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -126,6 +127,22 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
 
       ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        tooltip: "Créer un magazine",
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CreateMagazinePage(),
+            ),
+          );
+        },
+      ),
+
       body: _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _user == null
@@ -206,7 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-    );
+            );
   }
 }
 
