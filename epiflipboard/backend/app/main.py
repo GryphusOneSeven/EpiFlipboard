@@ -163,3 +163,27 @@ def get_current_user(authorization: str = Header(None)):
 @app.get("/profile")
 def get_profile(current_user: dict = Depends(get_current_user)):
     return current_user
+
+@app.get("/articles")
+def get_articles(limit: int = 10):
+    response = (
+        supabase
+        .table("articles")
+        .select("id, title, description, source, publishedAt")
+        .order("publishedAt", desc=True)
+        .limit(limit)
+        .execute()
+    )
+
+    return response.data
+
+@app.get("/magazine")
+def get_magazine():
+    response = (
+        supabase
+        .table("magazine")
+        .select("id, name, description, private")
+        .execute()
+    )
+
+    return response.data
