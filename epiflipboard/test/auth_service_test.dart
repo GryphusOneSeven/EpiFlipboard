@@ -20,7 +20,14 @@ class MockGoogleSignInAuthentication extends Mock
 
 class MockHttpClient extends Mock implements http.Client {}
 
+class FakeUri extends Fake implements Uri {}
+
 void main() {
+  setUpAll(() {
+    registerFallbackValue(FakeUri());
+    registerFallbackValue(<String, String>{});
+  });
+
   late AuthService authService;
   late MockGoogleSignIn mockGoogleSignIn;
   late MockHttpClient mockClient;
@@ -34,6 +41,7 @@ void main() {
       client: mockClient,
     );
   });
+
 
   group('AuthService.signInWithGoogle', () {
     test('retourne false si l\'utilisateur annule la connexion', () async {
