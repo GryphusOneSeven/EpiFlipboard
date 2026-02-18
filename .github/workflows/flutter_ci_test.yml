@@ -9,16 +9,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+
       - name: Generate config files from GitHub secrets
         run: |
           mkdir -p epiflipboard/lib/config
           echo "const String newsApiKey = '${{ secrets.NEWS_API_KEY }}';" > epiflipboard/lib/config/newsApi.dart
           echo "const String googleClientId = '${{ secrets.GOOGLE_CLIENT_ID }}';" > epiflipboard/lib/config/secrets.dart
           echo "const String googleServerClientId = '${{ secrets.GOOGLE_SERVER_CLIENT_ID }}';" >> epiflipboard/lib/config/secrets.dart
-      - run: cd epiflipboard && flutter pub get
-      - run: cd epiflipboard && flutter test
+
+      - name: Install dependencies
+        run: cd epiflipboard && flutter pub get
+
+      - name: Run tests with coverage
+        run: cd epiflipboard && flutter test --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: epiflipboard/coverage/lcov.info
+          fail_ci_if_error: true
