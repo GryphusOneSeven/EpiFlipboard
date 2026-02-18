@@ -4,8 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../api/backend_url.dart';
 import '../services/auth_storage.dart';
-
-
+import '../widgets/magazineCard.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = true;
   Map<String, dynamic>? _user;
+  List<Magazine> _userMags = List.empty();
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchMagazine();
   }
 
-  Future<List<dynamic>> _fetchMagazine() async {
+  Future<void> _fetchMagazine() async {
     setState(() {
       _isLoading = true;
     });
@@ -38,15 +38,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (response.statusCode == 200) {
-      // final MagData = jsonDecode(response.body);
-      // final list = MagData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
-      // print(list);
+      final MagData = jsonDecode(response.body);
+      _userMags = MagData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
 
       setState(() {
         _isLoading = false;
       });
 
-      return jsonDecode(response.body);
     } else {
         setState(() {
           _isLoading = false;
@@ -200,6 +198,25 @@ class _ProfilePageState extends State<ProfilePage> {
                         }),
                       ],
                     ),
+
+                    // const SizedBox(height: 20),
+
+                    // GridView.builder(
+                    //   padding: const EdgeInsets.all(16),
+                    //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    //     crossAxisCount: 2,
+                    //     crossAxisSpacing: 16,
+                    //     mainAxisSpacing: 16,
+                    //     childAspectRatio: 0.85,
+                    //   ),
+                    //   itemCount: _userMags.length,
+                    //   itemBuilder: (context, index) {
+                    //     final magazine = _userMags[index];
+
+                    //     return MagazineCard(magazine: magazine);
+                    //   },
+                    // )
+
                   ],
                 ),
               ),
