@@ -30,6 +30,18 @@ jobs:
       - name: Run tests with coverage
         run: cd epiflipboard && flutter test --coverage
 
+      - name: Install lcov
+        run: sudo apt-get install lcov
+
+      - name: Generate HTML report
+        run: genhtml epiflipboard/coverage/lcov.info -o epiflipboard/coverage/html
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: epiflipboard/coverage/html
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
