@@ -28,7 +28,11 @@ jobs:
         run: cd epiflipboard && flutter pub get
 
       - name: Run tests with coverage
-        run: flutter test --coverage -t epiflipboard/test
+        run: |
+          cd epiflipboard
+          flutter test --coverage
+          # Convert absolute paths to relative paths for genhtml
+          sed -i "s|SF:/home/runner/work/EpiFlipboard/EpiFlipboard/||" coverage/lcov.info
 
       - name: Install lcov
         run: sudo apt-get install lcov
