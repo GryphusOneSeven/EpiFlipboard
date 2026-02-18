@@ -15,40 +15,55 @@ class MagazineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade900,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            magazine.name,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: () {
+          print("train go boom");
+        },
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.network(
+                "https://picsum.photos/id/328/367/267",
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
 
-          const SizedBox(height: 8),
-
-          Text(
-            magazine.description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.grey,
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withAlpha(80),
+              ),
             ),
-          ),
 
-          const Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    magazine.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
 
-          if (_isMagPrivate(magazine.private))
-            const Icon(Icons.lock, size: 16, color: Colors.red),
-        ],
+                  Text(
+                    magazine.description,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  if (_isMagPrivate(magazine.private))
+                    const Icon(Icons.lock, size: 16, color: Colors.red),
+                ],
+              ),
+            ),
+          ],
       ),
     );
   }
