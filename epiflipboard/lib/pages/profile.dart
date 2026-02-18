@@ -38,8 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (response.statusCode == 200) {
-      final MagData = jsonDecode(response.body);
-      _userMags = MagData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
+      final magData = jsonDecode(response.body);
+      _userMags = magData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
 
       setState(() {
         _isLoading = false;
@@ -136,7 +136,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    /// Profile Image
                     CircleAvatar(
                         radius: 60,
                         backgroundImage: _user!["profile_picture"] != null
@@ -147,7 +146,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 16),
 
-                    /// Name
                     Text(
                       _user?["name"] ?? "Votre Profil",
                       style: const TextStyle(
@@ -158,7 +156,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 8),
 
-                    /// Email (optional)
                     Text(
                       _user?["email"] ?? "",
                       style: const TextStyle(color: Colors.grey),
@@ -166,16 +163,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 20),
 
-                    /// Stats Row
-                    // Row(
-                    //   children: [
-                    //     statButton("${_user?["adds_count"] ?? 0}\nAjouts", () {}),
-                    //     const SizedBox(width: 20),
-                    //     statButton("${_user?["likes_count"] ?? 0}\nJ'aime", () {}),
-                    //     const SizedBox(width: 20),
-                    //     statButton("${_user?["magazines_count"] ?? 0}\nMagazines", () {}),
-                    //   ],
-                    // ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -192,31 +179,30 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         }),
                         const SizedBox(width: 20),
-                        statButton("0\nMagazines", () {
+                        statButton("${_userMags.length}\nMagazines", () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Magazines")));
                         }),
                       ],
                     ),
 
-                    // const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    // GridView.builder(
-                    //   padding: const EdgeInsets.all(16),
-                    //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    //     crossAxisCount: 2,
-                    //     crossAxisSpacing: 16,
-                    //     mainAxisSpacing: 16,
-                    //     childAspectRatio: 0.85,
-                    //   ),
-                    //   itemCount: _userMags.length,
-                    //   itemBuilder: (context, index) {
-                    //     final magazine = _userMags[index];
-
-                    //     return MagazineCard(magazine: magazine);
-                    //   },
-                    // )
-
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _userMags.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final magazine = _userMags[index];
+                        return MagazineCard(magazine: magazine);
+                      },
+                    ),
                   ],
                 ),
               ),
