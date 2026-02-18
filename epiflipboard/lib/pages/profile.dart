@@ -1,3 +1,4 @@
+import 'package:epiflipboard/models/magazine.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,37 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _fetchProfile();
+    _fetchMagazine();
+  }
+
+  Future<List<dynamic>> _fetchMagazine() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await http.get(
+      Uri.parse('$backendBaseUrl/magazine'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // final MagData = jsonDecode(response.body);
+      // final list = MagData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
+      // print(list);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      return jsonDecode(response.body);
+    } else {
+        setState(() {
+          _isLoading = false;
+        });
+      throw Exception('Erreur lors du chargement des articles');
+    }
   }
 
   Future<void> _fetchProfile() async {
