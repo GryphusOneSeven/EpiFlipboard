@@ -57,3 +57,8 @@ def get_magazines(owner: int = Query(...)):
 def create_magazine(mag: dict):
     response = supabase.table("magazine").insert(mag).execute()
     return response.data
+
+@app.post("/magazine_article")
+def create_magazine_article(magArt: dict):
+    response = supabase.table("magazine_article").insert(magArt).execute()
+    return response.data
