@@ -1,7 +1,7 @@
 # app/routers/subscriptions.py
 from fastapi import APIRouter, Body, Depends
 from app.supabase_client import supabase
-from app.routers.auth import get_current_user
+from app.routers.users import get_current_user
 
 router = APIRouter()
 

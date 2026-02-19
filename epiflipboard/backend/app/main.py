@@ -1,6 +1,6 @@
 import os
 
-from epiflipboard.backend.app.routers import articles, auth, interactions, subscriptions, users
+from app.routers import articles, auth, interactions, subscriptions, users
 from .models import models
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,3 +40,14 @@ def test_db():
         return {"status": "ok", "data": result.data}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.get("/magazine")
+def get_magazine():
+    response = (
+        supabase
+        .table("magazine")
+        .select("id, name, description, private")
+        .execute()
+    )
+
+    return response.data
