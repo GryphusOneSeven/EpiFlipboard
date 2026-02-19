@@ -2,9 +2,9 @@ name: Flutter CI
 
 on:
   push:
-    branches: [ SetupServer ]
+    branches: [ NewUnitTest ]
   pull_request:
-    branches: [ SetupServer ]
+    branches: [ NewUnitTest ]
 
 jobs:
   build:
