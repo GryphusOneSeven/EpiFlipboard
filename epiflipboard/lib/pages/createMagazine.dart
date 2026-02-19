@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class CreateMagazinePage extends StatefulWidget {
-  const CreateMagazinePage({super.key});
+  final int userId;
+  const CreateMagazinePage({super.key, this.userId = 0});
 
   @override
   State<CreateMagazinePage> createState() => _CreateMagazinePageState();
@@ -41,7 +42,7 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
         "name": title,
         "description": description,
         "private": _isPrivate,
-        "owner": 12,
+        "owner": widget.userId,
       }),
     );
 
