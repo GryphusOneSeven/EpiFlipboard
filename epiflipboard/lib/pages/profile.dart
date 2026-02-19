@@ -20,8 +20,12 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Magazine> _userMags = List.empty();
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
+    _loadData();
+  }
+
+  void _loadData() async {
     await _fetchProfile();
     await _fetchMagazine();
   }
