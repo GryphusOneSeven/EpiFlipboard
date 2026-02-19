@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:epiflipboard/models/articleResult.dart';
+import 'package:epiflipboard/models/article.dart';
 
 void main() {
   group('Article Model', () {
