@@ -1,4 +1,7 @@
+import 'package:epiflipboard/api/backend_url.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class CreateMagazinePage extends StatefulWidget {
   const CreateMagazinePage({super.key});
@@ -20,7 +23,7 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
     super.dispose();
   }
 
-  void _validate() {
+  void _validate() async {
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
 
@@ -31,12 +34,22 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
       return;
     }
 
-    // 👉 ici plus tard : sauvegarde Supabase / backend
-    debugPrint("Titre: $title");
-    debugPrint("Description: $description");
-    debugPrint("Privé: $_isPrivate");
+    final response = await http.post(
+      Uri.parse('$backendBaseUrl/magazine'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "name": title,
+        "description": description,
+        "private": _isPrivate,
+        "owner": 12,
+      }),
+    );
 
-    Navigator.pop(context); // retour profil
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Erreur lors de la création');
+    }
+
+    Navigator.pop(context);
   }
 
   @override
@@ -50,7 +63,7 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
             child: const Text(
               "Valider",
               style: TextStyle(
-                color: Colors.red, // cohérent avec ton thème
+                color: Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -72,7 +85,7 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
             TextField(
               controller: _titleController,
               decoration: const InputDecoration(
-                hintText: "Ex : Technologie, Sport...",
+                hintText: "Entrer un nom",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -88,7 +101,7 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
               controller: _descriptionController,
               maxLines: 3,
               decoration: const InputDecoration(
-                hintText: "Décrivez le contenu du magazine",
+                hintText: "Ajouter une courte description",
                 border: OutlineInputBorder(),
               ),
             ),
