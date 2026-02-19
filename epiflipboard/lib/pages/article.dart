@@ -12,12 +12,12 @@ class ArticlePage extends StatefulWidget {
 class _ArticlePageState extends State<ArticlePage> {
 
   final NewsApiService newsService = NewsApiService();
-  late Future<List<dynamic>> articles;
+  late Future<List<dynamic>> articles = Future.value([]);
 
   @override
   void initState() {
     super.initState();
-    articles = newsService.searchKeyword("gundam");
+    // articles = newsService.searchKeyword("gundam");
   }
 
  @override

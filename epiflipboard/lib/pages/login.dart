@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,6 +11,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  bool _loading = false;
 
   void _login() {
     String email = _emailController.text.trim();
@@ -24,20 +28,38 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _loginWithGoogle() async {
+    setState(() => _loading = true);
+
+    final success = await _authService.signInWithGoogle();
+
+    if (!mounted) return; // 🔥 REQUIRED
+
+    setState(() => _loading = false);
+
+    if (success) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Connexion Google échouée')),
+      );
+    }
+  }
+
   void _continue() {
-    Navigator.pop(context);
+    setState(() => _loading = false);
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock_outline, size: 80, color: Colors.blue),
+              const Icon(Icons.lock_outline, size: 80, color: Colors.white),
               const SizedBox(height: 30),
               const Text(
                 'Connexion',
@@ -73,6 +95,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: const Text('Se connecter'),
               ),
 
+              const SizedBox(height: 30),
+
               ElevatedButton(
                 onPressed: _continue,
                 style: ElevatedButton.styleFrom(
@@ -80,6 +104,16 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: const Text('Continuer sans compte'),
               ),
+
+              const SizedBox(height: 10),
+
+              _loading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton.icon(
+                      icon: const Icon(Icons.login),
+                      label: const Text('Se connecter avec Google'),
+                      onPressed: _loginWithGoogle,
+                    ),
 
             ],
           ),

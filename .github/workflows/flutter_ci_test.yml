@@ -1,0 +1,56 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ SetupServer ]
+  pull_request:
+    branches: [ SetupServer ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Generate config files from GitHub secrets
+        run: |
+          mkdir -p epiflipboard/lib/config
+          echo "const String newsApiKey = '${{ secrets.NEWS_API_KEY }}';" > epiflipboard/lib/config/newsApi.dart
+          echo "const String googleClientId = '${{ secrets.GOOGLE_CLIENT_ID }}';" > epiflipboard/lib/config/secrets.dart
+          echo "const String googleServerClientId = '${{ secrets.GOOGLE_SERVER_CLIENT_ID }}';" >> epiflipboard/lib/config/secrets.dart
+
+      - name: Install dependencies
+        run: cd epiflipboard && flutter pub get
+
+      - name: Run tests with coverage
+        run: |
+          cd epiflipboard
+          flutter test --coverage
+          # Convert absolute paths to relative paths for genhtml
+          sed -i "s|SF:/home/runner/work/EpiFlipboard/EpiFlipboard/||" coverage/lcov.info
+
+      - name: Install lcov
+        run: sudo apt-get install lcov
+
+      - name: Generate HTML report
+        run: |
+          cd epiflipboard
+          genhtml coverage/lcov.info -o coverage/html
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: epiflipboard/coverage/html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: epiflipboard/coverage/lcov.info
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}

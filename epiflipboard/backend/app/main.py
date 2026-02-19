@@ -1,84 +1,36 @@
 import os
-from fastapi import FastAPI, HTTPException
+
+from app.routers import articles, auth, interactions, subscriptions, users
+from .models import models
+from fastapi import FastAPI, HTTPException, Depends, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 from .supabase_client import supabase
-from . import crud, models
+from . import crud
+from pydantic import BaseModel
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from app.auth.jwt import create_access_token
+from app.auth.jwt import verify_access_token
 
 app = FastAPI()
 
-# Autoriser ton front (REMPLACE par l'URL front)
-origins = ["https://ton-front.onrender.com", "http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(articles.router)
+app.include_router(subscriptions.router)
+app.include_router(interactions.router)
+
 @app.get("/")
 async def root():
     return {"status": "ok"}
-
-
-# Endpoint pour récupérer tous les utilisateurs
-# @app.get("/users")
-# def get_users():
-#     response = supabase.table("users").select("*").execute()
-#     if response.error:
-#         raise HTTPException(status_code=500, detail=str(response.error))
-#    return response.data
-
-# Endpoint pour ajouter un utilisateur
-@app.post("/users")
-def create_user(user: dict):
-    response = supabase.table("users").insert(user).execute()
-    if response.error:
-        raise HTTPException(status_code=500, detail=str(response.error))
-    return response.data
-
-# Endpoint pour récupérer un utilisateur par id
-@app.get("/users/{user_id}")
-def get_user(user_id: int):
-    response = supabase.table("users").select("*").eq("id", user_id).execute()
-    if response.error:
-        raise HTTPException(status_code=500, detail=str(response.error))
-    if not response.data:
-        raise HTTPException(status_code=404, detail="User not found")
-    return response.data[0]
-
-
-
-
-
-
-# USERS
-# @app.get("/users")
-# def list_users():
-#     return crud.get_users()
-
-# @app.post("/users")
-# def add_user(user: models.User):
-#     return crud.create_user(user.dict())
-
-# # POSTS
-# @app.get("/posts")
-# def list_posts():
-#     return crud.get_posts()
-
-# @app.post("/posts")
-# def add_post(post: models.Post):
-#     return crud.create_post(post.dict())
-
-# # LIKES
-# @app.get("/likes")
-# def list_likes():
-#     return crud.get_likes()
-
-# @app.post("/likes")
-# def add_like(like: models.Like):
-#     return crud.create_like(like.dict())
-
 
 
 @app.get("/test-db")
@@ -88,3 +40,20 @@ def test_db():
         return {"status": "ok", "data": result.data}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.get("/magazine")
+def get_magazines(owner: int = Query(...)):
+    response = (
+        supabase
+        .table("magazine")
+        .select("*")
+        .eq("owner", owner)
+        .execute()
+    )
+
+    return response.data
+
+@app.post("/magazine")
+def create_magazine(mag: dict):
+    response = supabase.table("magazine").insert(mag).execute()
+    return response.data
