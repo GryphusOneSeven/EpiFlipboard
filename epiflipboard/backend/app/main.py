@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 from .supabase_client import supabase
 from . import crud, models
@@ -178,11 +178,12 @@ def get_articles(limit: int = 10):
     return response.data
 
 @app.get("/magazine")
-def get_magazine():
+def get_magazines(owner: int = Query(...)):
     response = (
         supabase
         .table("magazine")
-        .select("id, name, description, private")
+        .select("*")
+        .eq("owner", owner)
         .execute()
     )
 
