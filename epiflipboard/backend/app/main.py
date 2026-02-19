@@ -2,7 +2,7 @@ import os
 
 from app.routers import articles, auth, interactions, subscriptions, users
 from .models import models
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 from .supabase_client import supabase
 from . import crud
@@ -42,11 +42,12 @@ def test_db():
         return {"status": "error", "message": str(e)}
 
 @app.get("/magazine")
-def get_magazine():
+def get_magazines(owner: int = Query(...)):
     response = (
         supabase
         .table("magazine")
-        .select("id, name, description, private")
+        .select("*")
+        .eq("owner", owner)
         .execute()
     )
 
