@@ -47,7 +47,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _continue() {
-    Navigator.pop(context);
+    setState(() => _loading = false);
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
