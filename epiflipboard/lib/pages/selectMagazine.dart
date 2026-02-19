@@ -22,6 +22,7 @@ class _SelectMagazinePageState extends State<SelectMagazinePage> {
   bool _isLoading = true;
   Map<String, dynamic>? _user;
   List<Magazine> _userMags = List.empty();
+  int articleid = -1;
 
   @override
   void initState() {
@@ -29,16 +30,10 @@ class _SelectMagazinePageState extends State<SelectMagazinePage> {
     _loadData();
   }
 
-  bool _isMagPrivate(String boool) {
-    if (boool == "true") {
-      return true;
-    }
-    return false;
-  }
-
   void _loadData() async {
     await _fetchUser();
     await _fetchMagazine();
+    await _addArticle(widget.article);
   }
 
   Future<void> _fetchMagazine() async {
@@ -104,6 +99,48 @@ class _SelectMagazinePageState extends State<SelectMagazinePage> {
     }
   }
 
+  Future<void> _addArticle(Article article) async {
+      final response = await http.post(
+      Uri.parse('$backendBaseUrl/add_article'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "title": article.title,
+        "author": article.author,
+        "description": article.description,
+        "content": article.content,
+        "source": article.source,
+        "url": article.url,
+        "urlToImage": article.imageUrl,
+      }),
+    );
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Erreur lors de la création');
+    }
+
+    final tmp = jsonDecode(response.body);
+    articleid = tmp[0]["id"];
+  }
+
+  Future<void> _addMagazineArticle(int magazienId, int articleId) async {
+    final response = await http.post(
+      Uri.parse('$backendBaseUrl/magazine_article'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "magazine_id": magazienId,
+        "article_id": articleId,
+      }),
+    );
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Erreur lors de la création');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,12 +167,11 @@ class _SelectMagazinePageState extends State<SelectMagazinePage> {
         return ListTile(
           title: Text(mag.name),
           subtitle: Text(mag.description),
-          trailing: _isMagPrivate(mag.private)
-              ? const Icon(Icons.lock, size: 18)
+          trailing: _isAlreadyAdded()
+              ? const Icon(Icons.check, color: Colors.green)
               : null,
           onTap: () async {
-            // await _addArticleToMagazine(context, mag);
-            print("allright");
+            await _addMagazineArticle(mag.id, articleid);
             Navigator.pop(context);
           },
         );
@@ -143,35 +179,8 @@ class _SelectMagazinePageState extends State<SelectMagazinePage> {
     );
   }
 
-  // Future<void> _addArticleToMagazine(
-  //   BuildContext context,
-  //   Magazine mag,
-  // ) async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse(
-  //         "https://TON_BACKEND/magazine/${mag.id}/add-article",
-  //       ),
-  //       headers: {"Content-Type": "application/json"},
-  //       body: jsonEncode({
-  //         "title": article.title,
-  //         "url": article.url,
-  //         "image": article.image,
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 201) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Ajouté à ${mag.name}")),
-  //       );
-  //     } else {
-  //       throw Exception("Erreur serveur");
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Erreur : $e")),
-  //     );
-  //   }
-  // }
+  bool _isAlreadyAdded() {
+    return true;
+  }
 
 }
