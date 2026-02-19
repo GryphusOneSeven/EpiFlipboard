@@ -133,6 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         tooltip: "Créer un magazine",
+        child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
             context,
