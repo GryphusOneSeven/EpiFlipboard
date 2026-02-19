@@ -20,10 +20,10 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Magazine> _userMags = List.empty();
 
   @override
-  void initState() {
+  void initState() async {
     super.initState();
-    _fetchProfile();
-    _fetchMagazine();
+    await _fetchProfile();
+    await _fetchMagazine();
   }
 
   Future<void> _fetchMagazine() async {
@@ -32,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     final response = await http.get(
-      Uri.parse('$backendBaseUrl/magazine'),
+      Uri.parse('$backendBaseUrl/magazine?owner=${_user!["id"]}'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CreateMagazinePage(),
+              builder: (context) => CreateMagazinePage(userId: _user!["id"]),
             ),
           );
         },
