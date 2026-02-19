@@ -14,6 +14,7 @@ void main() {
       description: "This is public",
       private: "false",
       owner: 1,
+      id: 1,
     );
 
     magazinePrivate = Magazine(
@@ -21,6 +22,7 @@ void main() {
       description: "This is private",
       private: "true",
       owner: 2,
+      id: 2,
     );
   });
 
