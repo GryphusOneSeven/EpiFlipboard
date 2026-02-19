@@ -1,8 +1,7 @@
 # app/routers/users.py
-from epiflipboard.backend.app.auth.jwt import verify_access_token
+from app.auth.jwt import verify_access_token
 from fastapi import APIRouter, Depends, HTTPException, Header
 from app.supabase_client import supabase
-from app.routers.auth import get_current_user
 
 router = APIRouter()
 

@@ -1,10 +1,10 @@
+import 'package:epiflipboard/models/magazine.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../api/backend_url.dart';
 import '../services/auth_storage.dart';
-
-
+import '../widgets/magazineCard.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,11 +16,41 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = true;
   Map<String, dynamic>? _user;
+  List<Magazine> _userMags = List.empty();
 
   @override
   void initState() {
     super.initState();
     _fetchProfile();
+    _fetchMagazine();
+  }
+
+  Future<void> _fetchMagazine() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await http.get(
+      Uri.parse('$backendBaseUrl/magazine'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final magData = jsonDecode(response.body);
+      _userMags = magData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
+
+      setState(() {
+        _isLoading = false;
+      });
+
+    } else {
+        setState(() {
+          _isLoading = false;
+        });
+      throw Exception('Erreur lors du chargement des articles');
+    }
   }
 
   Future<void> _fetchProfile() async {
@@ -106,7 +136,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    /// Profile Image
                     CircleAvatar(
                         radius: 60,
                         backgroundImage: _user!["profile_picture"] != null
@@ -117,7 +146,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 16),
 
-                    /// Name
                     Text(
                       _user?["name"] ?? "Votre Profil",
                       style: const TextStyle(
@@ -128,7 +156,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 8),
 
-                    /// Email (optional)
                     Text(
                       _user?["email"] ?? "",
                       style: const TextStyle(color: Colors.grey),
@@ -136,16 +163,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 20),
 
-                    /// Stats Row
-                    // Row(
-                    //   children: [
-                    //     statButton("${_user?["adds_count"] ?? 0}\nAjouts", () {}),
-                    //     const SizedBox(width: 20),
-                    //     statButton("${_user?["likes_count"] ?? 0}\nJ'aime", () {}),
-                    //     const SizedBox(width: 20),
-                    //     statButton("${_user?["magazines_count"] ?? 0}\nMagazines", () {}),
-                    //   ],
-                    // ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -162,11 +179,29 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         }),
                         const SizedBox(width: 20),
-                        statButton("0\nMagazines", () {
+                        statButton("${_userMags.length}\nMagazines", () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Magazines")));
                         }),
                       ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _userMags.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final magazine = _userMags[index];
+                        return MagazineCard(magazine: magazine);
+                      },
                     ),
                   ],
                 ),
