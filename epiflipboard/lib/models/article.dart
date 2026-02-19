@@ -29,4 +29,16 @@ class Article {
       url: json["url"] ?? "",
     );
   }
+
+  factory Article.empty() {
+    return Article(
+      title: "",
+      author: "",
+      description: "",
+      content: "",
+      url: "",
+      imageUrl: "",
+      source: "",
+    );
+  }
 }
