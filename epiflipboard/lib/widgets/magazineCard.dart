@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/magazine.dart';
+import 'package:epiflipboard/models/magazine.dart';
 
 class MagazineCard extends StatelessWidget {
   final Magazine magazine;
