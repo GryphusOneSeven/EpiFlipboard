@@ -2,6 +2,7 @@ import 'package:epiflipboard/models/article.dart';
 import 'package:epiflipboard/pages/article.dart';
 import 'package:epiflipboard/pages/createMagazine.dart';
 import 'package:epiflipboard/pages/selectMagazine.dart';
+import 'package:epiflipboard/pages/sourceArticles.dart';
 // import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
@@ -97,6 +98,7 @@ class EpiFlipboardApp extends StatelessWidget {
             '/article': (context) => const ArticlePage(),
             '/createMagazine': (context) => const CreateMagazinePage(),
             '/selectMagazine': (context) => SelectMagazinePage(article: Article.empty()),
+            '/sourceArticles': (context) => SourceArticlesPage(),
           },
         );
       },
