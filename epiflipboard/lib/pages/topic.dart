@@ -1,3 +1,4 @@
+import 'package:epiflipboard/pages/selectMagazine.dart';
 import 'package:flutter/material.dart';
 import '../services/newsAPI.dart';
 import 'package:epiflipboard/models/article.dart';
@@ -15,13 +16,20 @@ class _ArticleCard extends StatelessWidget {
   }
 
 
-  Widget _buildActionsBar() {
+  Widget _buildActionsBar(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _actionItem(Icons.favorite_border, "Like", () {debugPrintSynchronously("like");}),
         _actionItem(Icons.chat_bubble_outline, "Commenter", () {debugPrintSynchronously("comment");}),
-        _actionItem(Icons.add, "Ajouter", () {debugPrintSynchronously("add");}),
+        _actionItem(Icons.add, "Ajouter", () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SelectMagazinePage(article: article),
+            ),
+          );
+          }),
         _actionItem(Icons.share_outlined, "Partager", () {debugPrintSynchronously("share");}),
       ],
     );
@@ -90,7 +98,7 @@ class _ArticleCard extends StatelessWidget {
 
           const Spacer(),
 
-          _buildActionsBar(),
+          _buildActionsBar(context),
 
           const SizedBox(height: 24),
 
