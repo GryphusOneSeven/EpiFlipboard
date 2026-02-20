@@ -17,10 +17,21 @@ def get_articles_by_topic(topic: str):
 def search_articles(query: str):
     return supabase.table("articles").select("*").ilike("title", f"%{query}%").execute().data
 
+# @router.post("/add_article")
+# def add_article(article: dict = Body(...), current_user: dict = Depends(get_current_user)):
+#     article["author_id"] = current_user["id"]
+#     return supabase.table("articles").insert(article).execute().data
+
 @router.post("/add_article")
-def add_article(article: dict = Body(...), current_user: dict = Depends(get_current_user)):
-    article["author_id"] = current_user["id"]
-    return supabase.table("articles").insert(article).execute().data
+def add_article(article: dict = Body(...)):
+
+    existing = supabase.table("articles").select("id").eq("url", article["url"]).execute()
+
+    if not existing.data:
+        return supabase.table("articles").insert(article).execute().data
+    else:
+        print("article already in DB")
+        return existing.data
 
 @router.get("/magazine/{magazine_id}/articles")
 def get_articles_by_magazine(magazine_id: int):
