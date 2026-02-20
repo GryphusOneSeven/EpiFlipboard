@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:epiflipboard/models/articleResult.dart';
+import 'package:epiflipboard/models/article.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../api/backend_url.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/article.dart';
+import 'package:epiflipboard/models/article.dart';
 import '../config/newsApi.dart';
 
 class NewsApiService {

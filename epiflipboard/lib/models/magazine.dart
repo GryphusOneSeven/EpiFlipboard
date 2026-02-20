@@ -15,7 +15,6 @@ class Magazine {
 
   factory Magazine.fromJson(Map<String, dynamic> json) {
     return Magazine(
-      id: json["id"] ?? 0,
       name: json["name"] ?? "",
       description: json["description"] ?? "",
       private: json["private"] ?? "false",
