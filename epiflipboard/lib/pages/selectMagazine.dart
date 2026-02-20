@@ -172,6 +172,9 @@ class _SelectMagazinePageState extends State<SelectMagazinePage> {
               : null,
           onTap: () async {
             await _addMagazineArticle(mag.id, articleid);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Article ajouté au magazine")),
+            );
             Navigator.pop(context);
           },
         );
