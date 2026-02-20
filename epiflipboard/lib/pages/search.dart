@@ -15,70 +15,53 @@ class _SearchPageState extends State<SearchPage> {
 
 final List<Map<String, dynamic>> themes = [
   {
-    "name": "Actualités",
+    "name": "Français",
     "items": [
-      {"title": "À la une", "image": "https://picsum.photos/400/600?1"},
-      {"title": "International", "image": "https://picsum.photos/400/600?2"},
-      {"title": "France", "image": "https://picsum.photos/400/600?3"},
+      {"title": "Le monde", "id": "le-monde", "image": "https://picsum.photos/400/600?1"},
+      {"title": "L'equipe", "id": "lequipe", "image": "https://picsum.photos/400/600?2"},
+      {"title": "Les echos", "id": "les_echos", "image": "https://picsum.photos/400/600?3"},
     ],
   },
   {
-    "name": "Économie",
+    "name": "Anglais",
     "items": [
-      {"title": "Marchés", "image": "https://picsum.photos/400/600?4"},
-      {"title": "Startups", "image": "https://picsum.photos/400/600?5"},
-      {"title": "Bourse", "image": "https://picsum.photos/400/600?6"},
+      {"title": "ABC News", "id": "abc-news", "image": "https://picsum.photos/400/600?4"},
+      {"title": "BBC News", "id": "bbc-news", "image": "https://picsum.photos/400/600?5"},
+      {"title": "Bloomberg", "id": "bloomberg", "image": "https://picsum.photos/400/600?6"},
     ],
   },
   {
-    "name": "Tech",
+    "name": "Allemand",
     "items": [
-      {"title": "IA", "image": "https://picsum.photos/400/600?7"},
-      {"title": "Gadgets", "image": "https://picsum.photos/400/600?8"},
-      {"title": "Tech for good", "image": "https://picsum.photos/400/600?9"},
+      {"title": "Bild", "id": "bild", "image": "https://picsum.photos/400/600?7"},
+      {"title": "Der Tagesspiegel", "id": "der-tagesspiegel", "image": "https://picsum.photos/400/600?8"},
+      {"title": "Die Zeit", "id": "die-zeit", "image": "https://picsum.photos/400/600?9"},
     ],
   },
   {
-    "name": "Science",
+    "name": "Espagnol",
     "items": [
-      {"title": "Espace", "image": "https://picsum.photos/400/600?10"},
-      {"title": "Santé", "image": "https://picsum.photos/400/600?11"},
+      {"title": "CNN Spanish", "id": "cnn-es", "image": "https://picsum.photos/400/600?10"},
+      {"title": "El Mundo", "id": "el-mundo", "image": "https://picsum.photos/400/600?11"},
     ],
   },
   {
-    "name": "Sport",
+    "name": "Italien",
     "items": [
-      {"title": "Football", "image": "https://picsum.photos/400/600?12"},
-      {"title": "NBA", "image": "https://picsum.photos/400/600?13"},
-      {"title": "Automobile", "image": "https://picsum.photos/400/600?14"},
+      {"title": "ANSA.it", "id": "ansa", "image": "https://picsum.photos/400/600?12"},
+      {"title": "Il Sole 24 Ore", "id": "il-sole-24-ore", "image": "https://picsum.photos/400/600?13"},
     ],
   },
   {
-    "name": "Voyage",
+    "name": "Russe",
     "items": [
-      {"title": "Destinations", "image": "https://picsum.photos/400/600?11"},
-      {"title": "Conseils", "image": "https://picsum.photos/400/600?12"},
-      {"title": "Hotels", "image": "https://picsum.photos/400/600?12"},
-    ],
-  },
-  {
-    "name": "Art",
-    "items": [
-      {"title": "Peinture", "image": "https://picsum.photos/400/600?13"},
-      {"title": "Photographie", "image": "https://picsum.photos/400/600?14"},
-    ],
-  },
-  {
-    "name": "Musique",
-    "items": [
-      {"title": "Rap", "image": "https://picsum.photos/400/600?15"},
-      {"title": "Électro", "image": "https://picsum.photos/400/600?16"},
-      {"title": "Rock", "image": "https://picsum.photos/400/600?16"},
+      {"title": "Lenta", "id": "lenta", "image": "https://picsum.photos/400/600?11"},
+      {"title": "RBC", "id": "rbc", "image": "https://picsum.photos/400/600?12"},
     ],
   },
 ];
 
-  String selectedTheme = "Actualités";
+  String selectedTheme = "Français";
 
 Widget _buildSearchBar(BuildContext context) {
   return Padding(
@@ -182,7 +165,7 @@ Widget _buildThemeItems() {
 
               Positioned.fill(
                 child: Container(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withAlpha(2),
                 ),
               ),
 
