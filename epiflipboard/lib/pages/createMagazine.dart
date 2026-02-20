@@ -50,6 +50,10 @@ class _CreateMagazinePageState extends State<CreateMagazinePage> {
       throw Exception('Erreur lors de la création');
     }
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Le magazine a été créé")),
+    );
+
     Navigator.pop(context);
   }
 
