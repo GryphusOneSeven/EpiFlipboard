@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../api/backend_url.dart';
 import '../services/auth_storage.dart';
+import '../services/auth_service.dart';
 import '../widgets/magazineCard.dart';
 import 'package:epiflipboard/pages/magazineDetailPage.dart';
 
@@ -19,6 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = true;
   Map<String, dynamic>? _user;
   List<Magazine> _userMags = List.empty();
+  final AuthService _authService = AuthService(); // 🔥 Ajouter pour logout
 
   @override
   void initState() {
@@ -45,16 +47,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (response.statusCode == 200) {
       final magData = jsonDecode(response.body);
-      _userMags = magData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
+      _userMags =
+          magData.map<Magazine>((json) => Magazine.fromJson(json)).toList();
 
       setState(() {
         _isLoading = false;
       });
-
     } else {
-        setState(() {
-          _isLoading = false;
-        });
+      setState(() {
+        _isLoading = false;
+      });
       throw Exception('Erreur lors du chargement des articles');
     }
   }
@@ -94,15 +96,21 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // 🔥 Nouvelle fonction logout
+  Future<void> _logout() async {
+    await _authService.signOut();
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profil"),
         elevation: 0,
-
         actions: [
-            IconButton(
+          IconButton(
             tooltip: "Historique",
             icon: const Icon(Icons.history),
             onPressed: () {
@@ -112,34 +120,38 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           ),
           IconButton(
-            tooltip: "Touver personnes",
+            tooltip: "Trouver personnes",
             icon: const Icon(Icons.person_add_alt_rounded),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Trouver personnes a suivre")),
+                const SnackBar(content: Text("Trouver personnes à suivre")),
               );
             },
           ),
           IconButton(
-            tooltip: "Parametres",
+            tooltip: "Paramètres",
             icon: const Icon(Icons.settings),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Parametres")),
+                const SnackBar(content: Text("Paramètres")),
               );
             },
           ),
+          // 🔥 Bouton de logout
+          IconButton(
+            tooltip: "Déconnexion",
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
         ],
-
       ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         tooltip: "Créer un magazine",
         child: const Icon(Icons.add),
         onPressed: () {
+          if (_user == null) return;
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -148,103 +160,94 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         },
       ),
-
       body: _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : _user == null
-            ? const Center(child: Text("Erreur de chargement"))
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    CircleAvatar(
+          ? const Center(child: CircularProgressIndicator())
+          : _user == null
+              ? const Center(child: Text("Erreur de chargement"))
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
                         radius: 60,
                         backgroundImage: _user!["profile_picture"] != null
                             ? NetworkImage(_user!["profile_picture"])
                             : const AssetImage('assets/profile.jpg')
                                 as ImageProvider,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    Text(
-                      _user?["name"] ?? "Votre Profil",
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      _user?["email"] ?? "",
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        statButton("0\nAjouts", () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Ajouts")),
-                          );
-                        }),
-                        const SizedBox(width: 20),
-                        statButton("0\nJ'aime", () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("J'aime")),
-                          );
-                        }),
-                        const SizedBox(width: 20),
-                        statButton("${_userMags.length}\nMagazines", () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Magazines")));
-                        }),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _userMags.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.1,
+                      const SizedBox(height: 16),
+                      Text(
+                        _user?["name"] ?? "Votre Profil",
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      itemBuilder: (context, index) {
-                        final magazine = _userMags[index];
-                        return MagazineCard(
-                          magazine: magazine,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MagazineDetailPage(
-                                  magazineId: magazine.id, // ou l'id réel du magazine
-                                  initialMagazineName: magazine.name,
-                                  magazineDescription: magazine.description,
-                                  ownerId: magazine.owner,
-                                ),
-                              ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _user?["email"] ?? "",
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          statButton("0\nAjouts", () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Ajouts")),
                             );
-                          },
-                        );
-                      },
-                    ),
-                  ],
+                          }),
+                          const SizedBox(width: 20),
+                          statButton("0\nJ'aime", () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("J'aime")),
+                            );
+                          }),
+                          const SizedBox(width: 20),
+                          statButton("${_userMags.length}\nMagazines", () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Magazines")));
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _userMags.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.1,
+                        ),
+                        itemBuilder: (context, index) {
+                          final magazine = _userMags[index];
+                          return MagazineCard(
+                            magazine: magazine,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MagazineDetailPage(
+                                    magazineId: magazine.id,
+                                    initialMagazineName: magazine.name,
+                                    magazineDescription: magazine.description,
+                                    ownerId: magazine.owner,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
+    );
   }
 }
 
