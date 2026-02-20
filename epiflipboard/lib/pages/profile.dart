@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../api/backend_url.dart';
 import '../services/auth_storage.dart';
 import '../widgets/magazineCard.dart';
+import 'package:epiflipboard/pages/magazineDetailPage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -222,7 +223,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       itemBuilder: (context, index) {
                         final magazine = _userMags[index];
-                        return MagazineCard(magazine: magazine);
+                        return MagazineCard(
+                          magazine: magazine,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MagazineDetailPage(
+                                  magazineId: magazine.id, // ou l'id réel du magazine
+                                  initialMagazineName: magazine.name,
+                                  magazineDescription: magazine.description,
+                                  ownerId: magazine.owner,
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       },
                     ),
                   ],

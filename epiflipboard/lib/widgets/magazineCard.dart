@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/magazine.dart';
+import 'package:epiflipboard/models/magazine.dart';
 
 class MagazineCard extends StatelessWidget {
-  Magazine magazine;
+  final Magazine magazine;
+  final VoidCallback? onTap;
 
-  MagazineCard({required this.magazine});
+  const MagazineCard({super.key, required this.magazine, this.onTap});
 
   bool _isMagPrivate(String boool) {
     if (boool == "true") {
@@ -16,9 +17,7 @@ class MagazineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-          print("train go boom");
-        },
+      onTap: onTap ?? () { print("train go boom"); },
         child: Stack(
           children: [
             Positioned.fill(
