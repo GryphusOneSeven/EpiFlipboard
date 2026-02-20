@@ -1,12 +1,13 @@
 # app/routers/auth.py
 import os
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Body
 from pydantic import BaseModel
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from app.supabase_client import supabase
 from app.auth.jwt import create_access_token
 from fastapi import Header
+import bcrypt
 
 router = APIRouter()
 
@@ -65,3 +66,83 @@ async def login_google(data: TokenSchema):
     except Exception as e:
         print(f"Erreur: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+
+
+
+class RegisterSchema(BaseModel):
+    email: str
+    password: str
+    name: str
+
+@router.post("/auth/register")
+async def register_user(data: RegisterSchema):
+    # Vérifier si l'utilisateur existe déjà
+    existing = supabase.table("User").select("*").eq("email", data.email).execute()
+    if existing.data:
+        raise HTTPException(status_code=400, detail="Email déjà utilisé")
+
+    # 🔐 Hasher le mot de passe
+    hashed_password = bcrypt.hashpw(
+        data.password.encode("utf-8"),
+        bcrypt.gensalt()
+    ).decode("utf-8")
+
+    user_data = {
+        "email": data.email,
+        "password": hashed_password,
+        "name": data.name,
+        "auth_provider": "local",
+        "profile_picture": None
+    }
+
+    response = supabase.table("User").insert(user_data).execute()
+    user = response.data[0]
+
+    token = create_access_token({
+        "sub": user["email"],
+        "user_id": user["id"]
+    })
+
+    return {
+        "message": "Utilisateur créé",
+        "token": token,
+        "user": user
+    }
+
+
+
+class LoginSchema(BaseModel):
+    email: str
+    password: str
+
+@router.post("/auth/login")
+async def login_user(data: LoginSchema):
+    response = supabase.table("User").select("*").eq("email", data.email).execute()
+
+    if not response.data:
+        raise HTTPException(status_code=401, detail="Utilisateur non trouvé")
+
+    user = response.data[0]
+
+    # 🔎 Vérifier le mot de passe hashé
+    if not user["password"]:
+        raise HTTPException(status_code=401, detail="Compte invalide")
+
+    password_match = bcrypt.checkpw(
+        data.password.encode("utf-8"),
+        user["password"].encode("utf-8")
+    )
+
+    if not password_match:
+        raise HTTPException(status_code=401, detail="Mot de passe incorrect")
+
+    token = create_access_token({
+        "sub": user["email"],
+        "user_id": user["id"]
+    })
+
+    return {
+        "message": "Connexion réussie",
+        "token": token,
+        "user": user
+    }

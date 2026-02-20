@@ -15,25 +15,44 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _loading = false;
 
-  void _login() {
+  /// Connexion avec email/mot de passe
+  Future<void> _loginWithEmail() async {
+    setState(() => _loading = true);
+
     String email = _emailController.text.trim();
     String password = _passwordController.text;
 
-    if (email == 'admin@example.com' && password == '1234') {
+    if (email.isEmpty || password.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez remplir tous les champs')),
+      );
+      setState(() => _loading = false);
+      return;
+    }
+
+    final success = await _authService.signInWithEmail(email, password);
+
+    if (!mounted) return;
+
+    setState(() => _loading = false);
+
+    if (success) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Identifiants incorrects')),
+        const SnackBar(content: Text('Email ou mot de passe incorrect')),
       );
     }
   }
 
+  /// Connexion Google
   Future<void> _loginWithGoogle() async {
     setState(() => _loading = true);
 
     final success = await _authService.signInWithGoogle();
 
-    if (!mounted) return; // 🔥 REQUIRED
+    if (!mounted) return;
 
     setState(() => _loading = false);
 
@@ -46,9 +65,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _continue() {
-    setState(() => _loading = false);
-    Navigator.pushReplacementNamed(context, '/home');
+  /// Aller à la page d'inscription
+  void _goToRegister() {
+    Navigator.pushNamed(context, '/register');
   }
 
   @override
@@ -56,10 +75,11 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock_outline, size: 80, color: Colors.white),
+              const Icon(Icons.lock_outline, size: 80, color: Colors.red),
               const SizedBox(height: 30),
               const Text(
                 'Connexion',
@@ -67,6 +87,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 30),
 
+              /// Email
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -77,6 +98,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20),
 
+              /// Mot de passe
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -87,34 +109,35 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 30),
 
-              ElevatedButton(
-                onPressed: _login,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text('Se connecter'),
-              ),
-
-              const SizedBox(height: 30),
-
-              ElevatedButton(
-                onPressed: _continue,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text('Continuer sans compte'),
-              ),
-
-              const SizedBox(height: 10),
-
+              /// Bouton connexion email
               _loading
                   ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _loginWithEmail,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: const Text('Se connecter'),
+                    ),
+
+              const SizedBox(height: 20),
+
+              /// Bouton inscription
+              TextButton(
+                onPressed: _goToRegister,
+                child: const Text("Pas encore de compte ? S'inscrire"),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// Bouton connexion Google
+              _loading
+                  ? const SizedBox.shrink()
                   : ElevatedButton.icon(
                       icon: const Icon(Icons.login),
                       label: const Text('Se connecter avec Google'),
                       onPressed: _loginWithGoogle,
                     ),
-
             ],
           ),
         ),
