@@ -1,3 +1,4 @@
+import 'package:epiflipboard/pages/sourceArticles.dart';
 import 'package:flutter/material.dart';
 // import '../services/newsAPI.dart';
 import './results.dart';
@@ -152,8 +153,16 @@ Widget _buildThemeItems() {
       itemBuilder: (context, index) {
         final item = items[index];
 
-        return ClipRRect(
+        return InkWell(
           borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SourceArticlesPage(sourceId: item["id"], sourceName: item["title"]),
+            ),
+          );
+          },
           child: Stack(
             children: [
               Positioned.fill(
