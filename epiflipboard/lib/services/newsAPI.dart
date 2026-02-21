@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/articleResult.dart';
+import 'package:epiflipboard/models/article.dart';
 import '../config/newsApi.dart';
 
 class NewsApiService {
@@ -66,4 +66,26 @@ class NewsApiService {
         .map((json) => Article.fromJson(json))
         .toList();
   }
+
+  static Future<List<Article>> getSourceArticles(String source) async {
+    final url = Uri.parse(
+      "https://newsapi.org/v2/everything"
+      "?sources=$source"
+      "&apiKey=$newsApiKey",
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception("Erreur NewsAPI");
+    }
+
+    final data = jsonDecode(response.body);
+    final List articlesJson = data["articles"];
+
+    return articlesJson
+        .map((json) => Article.fromJson(json))
+        .toList();
+  }
+  
 }

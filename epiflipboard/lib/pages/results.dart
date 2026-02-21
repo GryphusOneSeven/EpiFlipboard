@@ -1,3 +1,4 @@
+import 'package:epiflipboard/pages/selectMagazine.dart';
 import 'package:flutter/material.dart';
 import '../services/newsAPI.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -145,6 +146,17 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                         ),
                       ],
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SelectMagazinePage(article: article),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

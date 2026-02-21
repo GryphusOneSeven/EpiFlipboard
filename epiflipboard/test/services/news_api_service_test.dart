@@ -1,9 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:epiflipboard/services/newsAPI.dart';
-import 'package:epiflipboard/models/articleResult.dart';
+import 'package:epiflipboard/models/article.dart';
 
 void main() {
-  group('NewsApiService', () {
+  group('NewsAPI', () {
+    test('fetchArticles returns articles', () async {
+      // TODO: Mock HTTP and test fetchArticles
+      expect(true, isTrue); // Placeholder
+    });
     test('getArticlesByTopic returns List<Article>', () async {
       final articles = await NewsApiService.getArticlesByTopic('tech');
       expect(articles, isA<List<Article>>());

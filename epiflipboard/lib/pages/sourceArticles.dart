@@ -1,9 +1,55 @@
-import 'package:epiflipboard/pages/selectMagazine.dart';
-import 'package:flutter/material.dart';
-import '../services/newsAPI.dart';
 import 'package:epiflipboard/models/article.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:epiflipboard/pages/selectMagazine.dart';
+import 'package:epiflipboard/services/newsAPI.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class SourceArticlesPage extends StatelessWidget {
+  final String sourceName;
+  final String sourceId;
+
+  const SourceArticlesPage({
+    super.key,
+    this.sourceName = "Google News",
+    this.sourceId = "google-news",
+  });
+
+  Future<List<Article>> _fetchArticles() {
+    return NewsApiService.getSourceArticles(sourceId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(sourceName),
+      ),
+      body: FutureBuilder<List<Article>>(
+        future: _fetchArticles(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || !snapshot.hasData) {
+            return const Center(child: Text("Erreur de chargement"));
+          }
+
+          final articles = snapshot.data!;
+
+          return PageView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: articles.length,
+            itemBuilder: (context, index) {
+              return _ArticleCard(article: articles[index]);
+            },
+          );
+        },
+      ),
+    );
+  }
+}
 
 class _ArticleCard extends StatelessWidget {
   final Article article;
@@ -22,7 +68,7 @@ class _ArticleCard extends StatelessWidget {
       children: [
         _actionItem(Icons.favorite_border, "Like", () {debugPrintSynchronously("like");}),
         _actionItem(Icons.chat_bubble_outline, "Commenter", () {debugPrintSynchronously("comment");}),
-        _actionItem(Icons.add, "Ajouter", () {
+        _actionItem(Icons.add, "Ajouter", () {          
             Navigator.push(
             context,
             MaterialPageRoute(
@@ -110,50 +156,6 @@ class _ArticleCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class TopicPage extends StatelessWidget {
-  final String topic;
-
-  const TopicPage({
-    super.key,
-    this.topic = "general",
-  });
-
-  Future<List<Article>> _fetchArticles() {
-    return NewsApiService.getArticlesByTopic(topic);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(topic.toUpperCase()),
-      ),
-      body: FutureBuilder<List<Article>>(
-        future: _fetchArticles(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text("Erreur de chargement"));
-          }
-
-          final articles = snapshot.data!;
-
-          return PageView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: articles.length,
-            itemBuilder: (context, index) {
-              return _ArticleCard(article: articles[index]);
-            },
-          );
-        },
       ),
     );
   }

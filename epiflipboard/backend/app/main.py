@@ -1,6 +1,6 @@
 import os
 
-from app.routers import articles, auth, interactions, subscriptions, users
+from app.routers import articles, auth, interactions, subscriptions, users, magazines
 from .models import models
 from fastapi import FastAPI, HTTPException, Depends, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +27,7 @@ app.include_router(users.router)
 app.include_router(articles.router)
 app.include_router(subscriptions.router)
 app.include_router(interactions.router)
+app.include_router(magazines.router)
 
 @app.get("/")
 async def root():
@@ -56,4 +57,9 @@ def get_magazines(owner: int = Query(...)):
 @app.post("/magazine")
 def create_magazine(mag: dict):
     response = supabase.table("magazine").insert(mag).execute()
+    return response.data
+
+@app.post("/magazine_article")
+def create_magazine_article(magArt: dict):
+    response = supabase.table("magazine_article").insert(magArt).execute()
     return response.data
